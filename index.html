@@ -38,8 +38,13 @@
 
                     const urlSeparada = url.split("?")
 
-                    var params = urlSeparada[1].split("&")
-                        .map(item => item.split("="))
+                    urlSeparadaParametros = url.replace(urlSeparada[0] + "?", "")
+
+                    var params = urlSeparadaParametros.split("&")
+                        .map(item => item.split(/\S{0}=\S{0}/))
+
+
+                    console.log("urlSeparadaParametros", params)
 
                     params = params.reduce(
                         (a, v) => ({ ...a, [v[0]]: v[1].replace(/<</g, "<?").replace(/>>/g, "?>") }), {})
@@ -56,7 +61,6 @@
                 objetoOriginal[0].parameters.config.headers.current_node = "https://portoassistencia.altu.com.br/assistants/builder/<? $system.current_assistant ?>?current_node=<? $system.current_node ?>"
                 objetoOriginal[0].parameters.config.headers.previous_node = "https://portoassistencia.altu.com.br/assistants/builder/<? $system.current_assistant ?>?current_node=<? $system.previous_node ?>"
 
-                console.log("JSON", objetoOriginal)
                 editor2.setValue(JSON.stringify(objetoOriginal, null, 4));
 
             } catch (err) {
