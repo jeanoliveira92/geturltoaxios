@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minificar log da AWS</title>
+
+    <link href="./style.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="master"></div>
+    <div class="row">
+        <h1>Get URL para Axios Request</h1>
+    </div>
+    <div class="row">
+        <div name="original" id="original"></div>
+        <input type="button" class="button-17" role="button" value="CONVERTER" onclick="converter()">
+        <div name="migrated" id="migrated"></div>
+    </div>
+    </div>
+    <script>
+
+        const converter = event => {
+            // const original = document.getElementById("original").firstChild.value
+            // const migrated = document.getElementById("migrated").firstChild
+            try {
+                const original = editor.getValue()
+
+                const objetoOriginal = JSON.parse(original)
+
+                if (objetoOriginal[0].parameters.config.method.toLowerCase() == "get") {
+
+                    var url = objetoOriginal[0].parameters.config.url
+
+                    url = url.replace(/<\?/g, "<<").replace(/\?>/g, ">>")
+
+                    const urlSeparada = url.split("?")
+
+                    var params = urlSeparada[1].split("&")
+                        .map(item => item.split("="))
+
+                    params = params.reduce(
+                        (a, v) => ({ ...a, [v[0]]: v[1].replace(/<</g, "<?").replace(/>>/g, "?>") }), {})
+
+                    objetoOriginal[0].parameters.config.params = params
+                    objetoOriginal[0].parameters.config.flavor = "axios"
+                    objetoOriginal[0].parameters.config.url = urlSeparada[0].replace(/<</g, "<?").replace(/>>/g, "?>")
+                }
+
+
+                objetoOriginal[0].parameters.config.headers.bot = "<? $system.current_assistant ?>"
+                objetoOriginal[0].parameters.config.headers.contactId = "https://portoassistencia.altu.com.br/contacts/details/<? contact.id ?>"
+                objetoOriginal[0].parameters.config.headers.instancia = "portoassistencia"
+                objetoOriginal[0].parameters.config.headers.current_node = "https://portoassistencia.altu.com.br/assistants/builder/<? $system.current_assistant ?>?current_node=<? $system.current_node ?>"
+                objetoOriginal[0].parameters.config.headers.previous_node = "https://portoassistencia.altu.com.br/assistants/builder/<? $system.current_assistant ?>?current_node=<? $system.previous_node ?>"
+
+                console.log("JSON", objetoOriginal)
+                editor2.setValue(JSON.stringify(objetoOriginal, null, 4));
+
+            } catch (err) {
+                console.log("JSON", err)
+                editor2.setValue(err.message);
+            }
+        }
+    </script>
+
+    <script src="./aceeditor.js"></script>
+    <script>
+        //https://ace.c9.io/#nav=howto
+        var editor = ace.edit("original");
+        editor.setTheme("ace/theme/monokai");
+        editor.session.setMode("ace/mode/javascript");
+
+        var editor2 = ace.edit("migrated");
+        editor2.setTheme("ace/theme/monokai");
+        editor2.session.setMode("ace/mode/javascript");
+    </script>
+    </div>
+</body>
+
+</html>
