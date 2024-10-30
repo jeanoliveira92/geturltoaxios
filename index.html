@@ -49,8 +49,8 @@
                     params = params.reduce(
                         (a, v) => ({ ...a, [v[0]]: v[1].replace(/<</g, "<?").replace(/>>/g, "?>") }), {})
 
-                    objetoOriginal[0].parameters.config.params = params
-                    objetoOriginal[0].parameters.config.flavor = "axios"
+                    objetoOriginal[0].parameters.flavor = "axios"
+                    objetoOriginal[0].parameters.config.params = { ...objetoOriginal[0]?.parameters?.config?.params, params }
                     objetoOriginal[0].parameters.config.url = urlSeparada[0].replace(/<</g, "<?").replace(/>>/g, "?>")
                 }
 
